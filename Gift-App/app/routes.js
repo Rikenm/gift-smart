@@ -1,6 +1,7 @@
 var User = require('./models/user');
 const request = require('request-promise');
 
+
 module.exports = function(app, passport){
 
 	app.get('/', function(req, res){
@@ -36,22 +37,25 @@ module.exports = function(app, passport){
 	app.get('/result',isLoggedIn, function(req,res){
 
 					//console.log(req.query.search);
-					var query = req.query.search;
+					var query = req.query.search;  //replace this with face_token
 
-					var user_access_token = req.user.facebook.token
+
+          query = "http://everydayshouldbefun.com/wp-content/uploads/2017/01/1435305770-36a7c3951a2bb484f033814ee652156a-600x398.jpg"
 
 					const userFieldSet = query;
 					// for friends' likes
 					//https://graph.facebook.com/me/friends?fields=name,id,likes.limit(100).fields(id,name)&limit=100
 
-        
+
 
  				const options = {
-	 			method: 'GET',
-	 			uri: `https://graph.facebook.com/v2.8/${req.user.facebook.id}`,
+	 			method: 'POST',
+	 			uri: `https://api-us.faceplusplus.com/facepp/v3/detect`,
 	 			qs: {
-		 		access_token: user_access_token,
-		 		fields: userFieldSet
+		 		api_key: "3vRtvVYa4DDJUwuKPGiA44LJpPAf6H5i",
+				api_secret:"HkO0rQkGTS2Pi3OuPEQ-y8qLYIeONGW6",
+				image_url:query,
+				return_attributes: "emotion"
 	 		   }
        	};
 	 	 		request(options, function(error, response,body){
@@ -67,12 +71,44 @@ module.exports = function(app, passport){
 
 	 		});
 
+	});
+
+	app.get('/music',isLoggedIn, function(req,res){
+
+
+					//var query = req.query.search;
 
 
 
+				const options = {
+				method: 'GET',
+				uri: `https://c109317344.web.cddbp.net/webapi/json/1.0/radio/recommend`,
+				qs: {
+				client: "109317344-838C752F1A38763006AAEB09295D9F21",
+				user:"43446129425491942-0AD171CD3A77BD28269F257DABF8E46C",
+        seed:"(mood_65323);(text_artist_blink-182)",
+				return_count:"10"
+				 }
+				};
+				request(options, function(error, response,body){
 
+					if (!error && response.statusCode == 200){
+						var parsedData = JSON.parse(body);
+
+						res.render("result.ejs",{parsedData : parsedData });
+					}
+					else {
+						console.log("error");
+					}
+
+			});
 
 	});
+
+
+
+
+
 
 	app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email','user_likes','user_friends']}));
 

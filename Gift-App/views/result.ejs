@@ -9,11 +9,10 @@
 	<div class="col-sm-6">
 	<div class="well">
 
- <h4><bold> Your Facebook likes include </bold></h4> <% parsedData["likes"]["data"].forEach(function(likes){ %>
+ <h4><bold> Your Facebook likes include </bold></h4>
 
-			<li><%= JSON.stringify(likes["name"]) %></li>
+			<li><%= JSON.stringify(parsedData) %></li>
 
-			<% }) %>
 
 </div>
 </div>
